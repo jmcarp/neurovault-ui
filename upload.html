@@ -1,0 +1,52 @@
+<html ng-app="UploadApp" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+
+    <head>
+
+        <!--<link rel="stylesheet" href="https://raw.github.com/angular-ui/ng-grid/master/ng-grid.css" />-->
+        <link rel="stylesheet" href="http://angular-ui.github.com/ng-grid/css/ng-grid.css" />
+
+        <!-- jQuery -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+        <!-- Angular -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"></script>
+        <script type="text/javascript" src="http://angular-ui.github.com/ng-grid/lib/ng-grid.js"></script>
+        <script type="text/javascript" src="/static/js/ng-grid-flexible-height.js"></script>
+        <!--<script type="test/javascript" src="https://raw.github.com/angular-ui/ng-grid/master/ng-grid-2.0.5.min.js"></script>-->
+
+        <!-- BlueImp -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload.js"></script>
+
+        <!-- Project -->
+        <script type="text/javascript" src="/static/js/upload.js"></script>
+
+        <style>
+            .gridStyle {
+                height: 60%;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div ng-controller="UploadGroupCtrl">
+
+            <label>Name</label><input type="text" placeholder="Collection Name" />
+            <label>DOI [optional]</label><input type="text" />
+
+            <hr />
+            <!--<input id="fileupload" type="file" name="files[]" data-url="/" multiple >-->
+            <form id="fileupload" action="/uploadHandler/" method="POST" enctype="multipart/form-data"></form>
+
+            <!-- Uploaded files -->
+            <div class="gridStyle" ng-grid="gridOptions"></div>
+
+            <button data-ng-click="">Submit</button>
+
+        </div>
+
+    </body>
+
+</html>
