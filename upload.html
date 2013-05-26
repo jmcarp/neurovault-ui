@@ -1,4 +1,4 @@
-<html ng-app="UploadApp" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 
     <head>
 
@@ -17,6 +17,14 @@
         <!-- BlueImp -->
         <script src="http://blueimp.github.com/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
         <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload.js"></script>
+        <!-- The File Upload processing plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-process.js"></script>
+        <!-- The File Upload image resize plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-resize.js"></script>
+        <!-- The File Upload validation plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-validate.js"></script>
+        <!-- The File Upload Angular JS module -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-angular.js"></script>
 
         <!-- Project -->
         <script type="text/javascript" src="/static/js/upload.js"></script>
@@ -31,14 +39,17 @@
 
     <body>
 
-        <div ng-controller="UploadGroupCtrl">
+        <div ng-app="UploadApp" ng-controller="DemoFileUploadController">
 
             <label>Name</label><input type="text" placeholder="Collection Name" />
             <label>DOI [optional]</label><input type="text" />
 
             <hr />
-            <!--<input id="fileupload" type="file" name="files[]" data-url="/" multiple >-->
-            <form id="fileupload" action="/uploadHandler/" method="POST" enctype="multipart/form-data"></form>
+            <!-- <input id="fileupload" type="file" name="files[]" data-url="/" multiple > -->
+            <form id="fileupload" action="/uploadHandler" method="POST" enctype="multipart/form-data"
+                    data-fileupload="options" ng-class="{true: 'fileupload-processing'}[!!processing() || loadingFiles]">
+
+            </form>
 
             <!-- Uploaded files -->
             <div class="gridStyle" ng-grid="gridOptions"></div>

@@ -12,7 +12,8 @@ def index():
 def uploadHandler():
     print 'HERE'
     print 'FILES', len(request.files)
-    return jsonify({})
+    print request.method
+    return jsonify({'files': []})
 
 if __name__ == '__main__':
     app.run()
