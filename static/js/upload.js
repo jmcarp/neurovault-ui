@@ -3,9 +3,7 @@ var UploadApp;
 (function () {
     'use strict';
 
-    var isOnGitHub = window.location.hostname === 'blueimp.github.com' ||
-            window.location.hostname === 'blueimp.github.io',
-        url = isOnGitHub ? '//jquery-file-upload.appspot.com/' : 'uploadHandler/';
+    var url = 'uploadHandler/';
 
     UploadApp = angular.module('UploadApp', [
         'blueimp.fileupload', 'ngGrid'
@@ -13,20 +11,19 @@ var UploadApp;
         .config([
             '$httpProvider', 'fileUploadProvider',
             function ($httpProvider, fileUploadProvider) {
-                if (isOnGitHub) {
-                    // Demo settings:
-                    delete $httpProvider.defaults.headers.common['X-Requested-With'];
-                    angular.extend(fileUploadProvider.defaults, {
-                        disableImageResize: true
-                    });
-                }
+                // Demo settings:
+                delete $httpProvider.defaults.headers.common['X-Requested-With'];
+                angular.extend(fileUploadProvider.defaults, {
+                    disableImageResize: true,
+                    maxFileSize: 25000000,
+                    //acceptFileTypes: /(\.|\/)(nii|img|hdr|mat|nii\.gz)$/i
+                 });
             }
         ])
 
         .controller('DemoFileUploadController', [
             '$scope', '$http',
             function ($scope, $http) {
-                if (!isOnGitHub) {
                     $scope.loadingFiles = true;
                     $scope.options = {
                         url: url,
@@ -44,112 +41,41 @@ var UploadApp;
                                 $scope.loadingFiles = false;
                             }
                         );
-                }
-        // Initialize files
-        $scope.files = [];
 
         $scope.$on('fileuploadadd', function(post, data){
             console.log(post);
             console.log(data);
             console.log($scope);
-            for (var i=0; i < data.files.length; ++i) {
-                var file = data.files[i];
-                // .$apply to update angular when something else makes changes
-                $scope.$apply(
-                    $scope.files.push({
-                        name : file.name,
-                        fullname : file.relativePath + file.name,
-                        path : file.relativePath,
-                        gid : 0,
-                    })
-                );
-            }
-        });
-        $scope.gridOptions = {
-            data : 'files',
-            columnDefs : [
-                {
-                    field : 'fullname',
-                    displayName : 'Name',
-                },
-                {
-                    field : 'gid',
-                    displayName : 'Group ID',
-                },
-                /*
-                {
-                    displayName : 'Tags',
-                    cellTemplate : '<div><input type="text" class="tags" /></div>',
-                },
-                */
-            ],
-            plugins: [new ngGridFlexibleHeightPlugin()]
-        };
-
-        var nfiles;
-
-        function guessGUID(e, data) {
-
             var gid = 0,
                 gidmap = {},
                 noext;
-
-            //
-            for (var i=0; i < $scope.files.length; ++i) {
-                var file = $scope.files[i];
-                if (file.fullname.match(/\.img$/i)) {
-                    $scope.$apply($scope.files[i].gid = ++gid);
-                    gidmap[file.fullname.replace(/\.img$/, '')] = gid;
-                }
-            };
-
-            // TODO: add brik/head etc.
-            for (var i=0; i < $scope.files.length; ++i) {
-
-                var file = $scope.files[i];
-
-                if (file.fullname.match(/\.(hdr|mat)$/i)) {
-
-                    noext = file.fullname.replace(/\.(hdr|mat)$/i, '');
-
-                    if (noext in gidmap) {
-                        $scope.$apply($scope.files[i].gid = gidmap[noext]);
-                    }
-
-                }
-            };
-
-        }
-
-        /*
-        $('#fileupload').bind('fileuploaddrop', function(e, data) {
-            nfiles = data.files.length;
-        });
-
-        //
-        $('#fileupload').bind('fileuploadadd', function(e, data) {
-            // Add the files to the list
-
+            console.log(data.files);
             for (var i=0; i < data.files.length; ++i) {
                 var file = data.files[i];
+                console.log(file);
                 // .$apply to update angular when something else makes changes
-                $scope.$apply(
-                    $scope.files.push({
-                        name : file.name,
-                        fullname : file.relativePath + file.name,
-                        path : file.relativePath,
-                        gid : 0,
-                    })
-                );
+                file.fullname = file.relativePath + file.name;
+                file.path = file.relativePath;
+                file.gid = 0;
+                if (file.fullname.match(/\.img$/i)) {
+                    file.gid = ++gid;
+                    gidmap[file.fullname.replace(/\.img$/, '')] = gid;
+                }
+                console.log($scope);
             }
+            console.log(gidmap);
 
-            //
-            if (e.eventPhase == 2 || $scope.files.length == nfiles) {
-                guessGUID(e, data);
-            }
-
+            // TODO: add brik/head etc.
+            for (var i=0; i < data.files.length; ++i) {
+                var file = data.files[i];
+                if (file.fullname.match(/\.(hdr|mat)$/i)) {
+                    noext = file.fullname.replace(/\.(hdr|mat)$/i, '');
+                    if (noext in gidmap) {
+                        file.gid = gidmap[noext];
+                    }
+                }
+            };
         });
-        */
             }
         ])
 

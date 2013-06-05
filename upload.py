@@ -13,6 +13,7 @@ def uploadHandler():
     print 'HERE'
     print 'FILES', len(request.files)
     print request.method
+    print request.files
     return jsonify({'files': []})
 
 if __name__ == '__main__':
