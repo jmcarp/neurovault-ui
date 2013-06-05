@@ -1,9 +1,23 @@
-<html ng-app="UploadApp" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 
     <head>
 
         <!--<link rel="stylesheet" href="https://raw.github.com/angular-ui/ng-grid/master/ng-grid.css" />-->
         <link rel="stylesheet" href="http://angular-ui.github.com/ng-grid/css/ng-grid.css" />
+
+        <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+        <!-- Generic page styles -->
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
+        <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+        <!-- Bootstrap CSS fixes for IE6 -->
+        <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+        <!-- Bootstrap Image Gallery styles -->
+        <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+        <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+        <link rel="stylesheet" href="http://blueimp.github.com/jQuery-File-Upload/css/jquery.fileupload-ui.css">
+        <!-- CSS adjustments for browsers with JavaScript disabled -->
+        <noscript><link rel="stylesheet" href="http://blueimp.github.com/jQuery-File-Upload/css/jquery.fileupload-ui-noscript.css"></noscript>
 
         <!-- jQuery -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -17,6 +31,14 @@
         <!-- BlueImp -->
         <script src="http://blueimp.github.com/jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
         <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload.js"></script>
+        <!-- The File Upload processing plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-process.js"></script>
+        <!-- The File Upload image resize plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-resize.js"></script>
+        <!-- The File Upload validation plugin -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-validate.js"></script>
+        <!-- The File Upload Angular JS module -->
+        <script src="http://blueimp.github.com/jQuery-File-Upload/js/jquery.fileupload-angular.js"></script>
 
         <!-- Project -->
         <script type="text/javascript" src="/static/js/upload.js"></script>
@@ -31,19 +53,87 @@
 
     <body>
 
-        <div ng-controller="UploadGroupCtrl">
+        <div>
 
+            <!--
             <label>Name</label><input type="text" placeholder="Collection Name" />
             <label>DOI [optional]</label><input type="text" />
-
+            -->
             <hr />
-            <!--<input id="fileupload" type="file" name="files[]" data-url="/" multiple >-->
-            <form id="fileupload" action="/uploadHandler/" method="POST" enctype="multipart/form-data"></form>
+            <!-- <input id="fileupload" type="file" name="files[]" data-url="/" multiple > -->
+            <form id="fileupload" action="/uploadHandler" method="POST" enctype="multipart/form-data"
+                  ng-app="UploadApp" ng-controller="DemoFileUploadController"
+                    data-fileupload="options" ng-class="{true: 'fileupload-processing'}[!!processing() || loadingFiles]">
+                <div class="row ng-hide fileupload-buttonbar">
+                    <div class="span7">
+                        <!-- The fileinput-button span is used to style the file input field as button -->
+                        <span class="btn btn-success fileinput-button">
+                            <i class="icon-plus icon-white"></i>
+                            <span>Add files...</span>
+                            <input type="file" name="files[]" multiple>
+                        </span>
+                        <button type="button" class="btn btn-primary start" data-ng-click="submit()">
+                            <i class="icon-upload icon-white"></i>
+                            <span>Start upload</span>
+                        </button>
+                        <button type="button" class="btn btn-warning cancel" data-ng-click="cancel()">
+                            <i class="icon-ban-circle icon-white"></i>
+                            <span>Cancel upload</span>
+                        </button>
+                        <!-- The loading indicator is shown during file processing -->
+                        <div class="fileupload-loading"></div>
+                    </div>
+                    <!-- The global progress information -->
+                    <div class="span5 fade" data-ng-class="{true: 'in'}[!!active()]">
+                        <!-- The global progress bar -->
+                        <div class="progress progress-success progress-striped active" data-progress="progress()"><div class="bar" ng-style="{width: num + '%'}"></div></div>
+                        <!-- The extended global progress information -->
+                        <div class="progress-extended">&nbsp;</div>
+                    </div>
+                </div>
+                <!-- The table listing the files available for upload/download -->
+                <table class="table table-striped files ng-cloak" data-toggle="modal-gallery" data-target="#modal-gallery">
+                    <tr data-ng-repeat="file in queue">
+                        <td>
+                            <p class="name" data-ng-switch on="!!file.url">
+                                <a data-ng-switch-when="true" data-ng-href="{{file.url}}" title="{{file.name}}" data-gallery="gallery" download="{{file.name}}">{{file.fullname}}</a>
+                                <span data-ng-switch-default>{{file.fullname}}</span>
+                            </p>
+                            <div ng-show="file.error"><span class="label label-important">Error</span> {{file.error}}</div>
+                        </td>
+                        <td>
+                            <p class="size">{{file.size | formatFileSize}}</p>
+                            <div class="progress progress-success progress-striped active fade" data-ng-class="{pending: 'in'}[file.$state()]" data-progress="file.$progress()"><div class="bar" ng-style="{width: num + '%'}"></div></div>
+                        </td>
+                        <td>
+                            <p class="group">{{file.gid}}</p>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary start" data-ng-click="file.$submit()" data-ng-hide="!file.$submit">
+                                <i class="icon-upload icon-white"></i>
+                                <span>Start</span>
+                            </button>
+                            <button type="button" class="btn btn-warning cancel" data-ng-click="file.$cancel()" data-ng-hide="!file.$cancel">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Cancel</span>
+                            </button>
+                            <!--
+                            <button data-ng-controller="FileDestroyController" type="button" class="btn btn-danger destroy" data-ng-click="file.$destroy()" data-ng-hide="!file.$destroy">
+                                <i class="icon-ban-circle icon-white"></i>
+                                <span>Delete</span>
+                            </button>
+                            -->
+                        </td>
+                    </tr>
+                </table>
+                <!--
+                <div class="gridStyle" ng-grid="gridOptions"></div>
+                -->
+            </form>
 
             <!-- Uploaded files -->
-            <div class="gridStyle" ng-grid="gridOptions"></div>
 
-            <button data-ng-click="">Submit</button>
+            <!-- <button data-ng-click="submit();">Submit</button> -->
 
         </div>
 
