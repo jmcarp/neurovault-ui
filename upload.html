@@ -5,6 +5,20 @@
         <!--<link rel="stylesheet" href="https://raw.github.com/angular-ui/ng-grid/master/ng-grid.css" />-->
         <link rel="stylesheet" href="http://angular-ui.github.com/ng-grid/css/ng-grid.css" />
 
+        <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+        <!-- Generic page styles -->
+        <link rel="stylesheet" href="css/style.css">
+        <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
+        <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
+        <!-- Bootstrap CSS fixes for IE6 -->
+        <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+        <!-- Bootstrap Image Gallery styles -->
+        <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
+        <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+        <link rel="stylesheet" href="http://blueimp.github.com/jQuery-File-Upload/css/jquery.fileupload-ui.css">
+        <!-- CSS adjustments for browsers with JavaScript disabled -->
+        <noscript><link rel="stylesheet" href="http://blueimp.github.com/jQuery-File-Upload/css/jquery.fileupload-ui-noscript.css"></noscript>
+
         <!-- jQuery -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -83,7 +97,7 @@
                         <td>
                             <p class="name" data-ng-switch on="!!file.url">
                                 <a data-ng-switch-when="true" data-ng-href="{{file.url}}" title="{{file.name}}" data-gallery="gallery" download="{{file.name}}">{{file.fullname}}</a>
-                                <span data-ng-switch-default>{{file.name}}</span>
+                                <span data-ng-switch-default>{{file.fullname}}</span>
                             </p>
                             <div ng-show="file.error"><span class="label label-important">Error</span> {{file.error}}</div>
                         </td>
